@@ -19,10 +19,8 @@
 import subprocess
 import sys
 import os
-from time import sleep
 
 from PyQt4.Qt import QApplication
-from PyQt4.QtGui import QPushButton
 
 from django.conf import settings
 import src.db.settings as my_settings
@@ -36,8 +34,8 @@ from src.window import Window
 
 if __name__ == '__main__':
     dirname = os.path.dirname(__file__)
-    if subprocess.check_call(['python', dirname + '/src/db/manage.py',
-                              'syncdb']) != 0:
+    manange_py = os.path.join(dirname, 'src', 'db', 'manage.py')
+    if subprocess.check_call(['python', manange_py, 'syncdb']) != 0:
         print "Could not create the database."
         sys.exit(-1)
 

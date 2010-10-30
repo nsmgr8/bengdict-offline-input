@@ -120,7 +120,8 @@ class AddWordWidget(QDialog):
             self.status.setText('There was an error inserting the word. Please'
                                 ' try again.')
             QMessageBox.critical(self, "Error", "You must enter at least "
-                                 "Original, Translation and Parts of Speech.")
+                                 "'Original', 'Translation' and 'Parts of "
+                                 "Speech'.")
             return
 
         word = Word(dictionary=current_dict, original=original,
