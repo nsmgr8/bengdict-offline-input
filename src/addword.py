@@ -26,6 +26,7 @@ class AddWordWidget(QDialog):
 
     def __init__(self, parent=None):
         super(AddWordWidget, self).__init__(parent=parent)
+        self.setWindowTitle('Add word')
 
         self.create_layout()
         self.create_connections()

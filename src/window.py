@@ -31,6 +31,7 @@ class Window(QMainWindow):
 
     def __init__(self):
         super(QMainWindow, self).__init__()
+        self.setWindowTitle('Bangla Dictionary')
 
         self.create_layout()
         self.create_actions()
