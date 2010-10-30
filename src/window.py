@@ -15,8 +15,9 @@
 #
 
 import os
+import datetime
 
-from PyQt4.QtGui import (QMainWindow, QAction, QApplication)
+from PyQt4.QtGui import (QMainWindow, QAction, QApplication, QMessageBox)
 from PyQt4.QtCore import SIGNAL, SLOT
 
 from django.core import serializers
@@ -65,6 +66,11 @@ class Window(QMainWindow):
 
     def export_words(self):
         words = Word.objects.filter(exported=False)
+        if words.count() == 0:
+            QMessageBox.information(self, 'BengDict',
+                                    'No word found to be exported')
+            return
+
         json_str = serializers.serialize("json", words, fields=['dictionary',
                                                                 'original',
                                                                 'translation',
@@ -73,7 +79,17 @@ class Window(QMainWindow):
                                                                 'description',
                                                                 'synonyms',
                                                                 'antonyms', ])
-        fname = os.path.dirname(__file__) + '/../export.json'
+
+        try:
+            root_dir = os.path.dirname(os.path.dirname(__file__))
+            exports_dir = os.path.join(root_dir, 'exports')
+            os.mkdir(exports_dir)
+        except OSError:
+            pass
+
+        time_format = datetime.datetime.now().isoformat().replace(':', '-')
+        fname = os.path.join(exports_dir, 'export-' + time_format + '.json')
+
         with open(fname, 'w') as f:
             f.write(json_str)
 
@@ -82,4 +98,6 @@ class Window(QMainWindow):
             word.save()
 
         self.words_widget.load_words()
+        QMessageBox.information(self, 'BengDict',
+                                'The exported file is saved in ' + fname)
 
