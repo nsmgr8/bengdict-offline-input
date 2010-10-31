@@ -88,7 +88,7 @@ class AddWordWidget(QDialog):
         hbox.addWidget(self.close_button)
         vbox.addLayout(hbox)
 
-        self.status = QLabel()
+        self.status = QLabel('Add a new word to a dictionary.')
         vbox.addWidget(self.status)
 
         self.setLayout(vbox)
@@ -187,6 +187,7 @@ class AddWordWidget(QDialog):
                                 'You cannot save the changes to it.')
         else:
             self.connect(self.add_button, SIGNAL("clicked()"), self.save_word)
+            self.status.setText('Edit this word and save to your dictionary.')
 
         for i, d in enumerate(self.dictionaries):
             if d.abbrev == word.dictionary:
