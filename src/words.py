@@ -16,7 +16,7 @@
 
 from PyQt4.QtGui import (QWidget, QTableWidget, QPushButton, QVBoxLayout,
                          QHBoxLayout, QComboBox, QTableWidgetItem, QLabel)
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import Qt, SIGNAL
 
 from django.core.paginator import Paginator, InvalidPage
 
@@ -106,7 +106,9 @@ class WordsWidget(QWidget):
                                      word.phoneme, word.synonyms, word.antonyms,
                                      word.added_at.strftime("%Y-%m-%d %H:%M"),
                                       "exported" if word.exported else "new"]):
-                self.words_table.setItem(i, j, QTableWidgetItem(cell))
+                item = QTableWidgetItem(cell)
+                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.words_table.setItem(i, j, item)
 
         self.next_button.setEnabled(page_obj.has_next())
         self.previous_button.setEnabled(page_obj.has_previous())
