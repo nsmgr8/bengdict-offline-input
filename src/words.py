@@ -20,6 +20,7 @@ from PyQt4.QtCore import Qt, SIGNAL
 
 from django.core.paginator import Paginator, InvalidPage
 
+from addword import AddWordWidget
 from db.bangladict.models import Dictionary, Word
 
 class WordsWidget(QWidget):
@@ -66,6 +67,9 @@ class WordsWidget(QWidget):
         self.connect(self.next_button, SIGNAL("clicked()"), self.next_words)
         self.connect(self.previous_button, SIGNAL("clicked()"),
                      self.previous_words)
+        self.connect(self.words_table,
+                     SIGNAL("itemDoubleClicked(QTableWidgetItem*)"),
+                     self.edit_word)
 
     def next_words(self):
         self.page_number += 1
@@ -81,7 +85,8 @@ class WordsWidget(QWidget):
 
     def load_words(self):
         dictionary = self.dictionaries[self.dict_combo.currentIndex()]
-        words = Word.objects.filter(dictionary=dictionary.abbrev)
+        words = Word.objects.filter(dictionary=dictionary.abbrev) \
+                    .order_by('original')
         paginator = Paginator(words, self.row, allow_empty_first_page=True)
         try:
             page_obj = paginator.page(self.page_number)
@@ -112,4 +117,13 @@ class WordsWidget(QWidget):
 
         self.next_button.setEnabled(page_obj.has_next())
         self.previous_button.setEnabled(page_obj.has_previous())
+
+    def edit_word(self):
+        index = self.words_table.currentRow() + self.row * (self.page_number - 1)
+        dictionary = self.dictionaries[self.dict_combo.currentIndex()]
+        word = Word.objects.filter(dictionary=dictionary.abbrev) \
+                    .order_by('original')[index]
+        edit_word = AddWordWidget(self)
+        edit_word.word = word
+        edit_word.show()
 

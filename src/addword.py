@@ -105,9 +105,7 @@ class AddWordWidget(QDialog):
         self.pos.addItems([p.strip() for p in
                            current_dict.pos.split(',') if len(p) > 0])
 
-    def add_word(self):
-        self.status.clear()
-
+    def get_texts(self):
         current_dict = self.dictionaries[self.dictionary.currentIndex()].abbrev
         original = unicode(self.original.text()).strip()
         translation = unicode(self.translation.text()).strip()
@@ -123,14 +121,14 @@ class AddWordWidget(QDialog):
             QMessageBox.critical(self, "Error", "You must enter at least "
                                  "'Original', 'Translation' and 'Parts of "
                                  "Speech'.")
-            return
+            return None
 
-        word = Word(dictionary=current_dict, original=original,
+        return dict(dictionary=current_dict, original=original,
                     translation=translation, phoneme=phoneme, pos=pos,
                     synonyms=synonyms, antonyms=antonyms,
                     description=description)
-        word.save()
 
+    def clear_texts(self):
         self.translation.clear()
         self.phoneme.clear()
         self.synonyms.clear()
@@ -138,5 +136,74 @@ class AddWordWidget(QDialog):
         self.description.clear()
 
         self.original.setFocus()
-        self.status.setText('Word has been added successfully.')
+
+    def add_word(self):
+        self.status.clear()
+
+        texts = self.get_texts()
+        if not texts:
+            return
+
+        word = Word(**texts)
+        word.save()
+
+        self.clear_texts()
+        self.status.setText('Word %s has been added successfully.' %
+                            word.original)
+
+    def save_word(self):
+        self.status.clear()
+
+        texts = self.get_texts()
+        if not texts:
+            return
+
+        word = self.word
+        word.dictionary = texts['dictionary']
+        word.original = texts['original']
+        word.translation = texts['translation']
+        word.phoneme = texts['phoneme']
+        word.pos = texts['pos']
+        word.synonyms = texts['synonyms']
+        word.antonyms = texts['antonyms']
+        word.description = texts['description']
+        word.save()
+
+        self.status.setText('Word %s has been saved successfully' %
+                            word.original)
+
+    def get_word(self):
+        return self._word
+
+    def set_word(self, word):
+        self._word = word
+        self.setWindowTitle("Edit %s" % word.original)
+        self.add_button.setText("&Save")
+        self.disconnect(self.add_button, SIGNAL("clicked()"), self.add_word)
+
+        if word.exported:
+            self.add_button.setEnabled(False)
+            self.status.setText('This word has been exported already. '
+                                'You cannot save the changes to it.')
+        else:
+            self.connect(self.add_button, SIGNAL("clicked()"), self.save_word)
+
+        for i, d in enumerate(self.dictionaries):
+            if d.abbrev == word.dictionary:
+                self.dictionary.setCurrentIndex(i)
+                break
+
+        self.original.setText(word.original)
+        self.translation.setText(word. translation)
+        self.phoneme.setText(word.phoneme)
+        self.synonyms.setText(word.synonyms)
+        self.antonyms.setText(word.antonyms)
+        self.description.setText(word.description)
+
+        for i in range(self.pos.count()):
+            if self.pos.itemText(i) == word.pos:
+                self.pos.setCurrentIndex(i)
+                break
+
+    word = property(get_word, set_word)
 
