@@ -63,6 +63,7 @@ class Window(QMainWindow):
 
     def new_word(self):
         add = AddWordWidget(self)
+        add.words_widget = self.words_widget
         add.show()
 
     def export_words(self):

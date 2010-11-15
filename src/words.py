@@ -125,5 +125,6 @@ class WordsWidget(QWidget):
                     .order_by('original')[index]
         edit_word = AddWordWidget(self)
         edit_word.word = word
+        edit_word.words_widget = self
         edit_word.show()
 

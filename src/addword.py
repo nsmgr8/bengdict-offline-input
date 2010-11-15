@@ -150,6 +150,7 @@ class AddWordWidget(QDialog):
         self.clear_texts()
         self.status.setText('Word %s has been added successfully.' %
                             word.original)
+        self.words_widget.load_words()
 
     def save_word(self):
         self.status.clear()
@@ -171,6 +172,7 @@ class AddWordWidget(QDialog):
 
         self.status.setText('Word %s has been saved successfully' %
                             word.original)
+        self.words_widget.load_words()
 
     def get_word(self):
         return self._word
