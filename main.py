@@ -34,6 +34,7 @@ from src.window import Window
 
 if __name__ == '__main__':
     dirname = os.path.dirname(__file__)
+    sys.path.insert(0, os.path.join(dirname, 'src', 'db'))
     manange_py = os.path.join(dirname, 'src', 'db', 'manage.py')
     if subprocess.check_call(['python', manange_py, 'syncdb']) != 0:
         print "Could not create the database."
